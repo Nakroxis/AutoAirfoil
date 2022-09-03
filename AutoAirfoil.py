@@ -26,5 +26,7 @@ topSpeedEntry=Entry(root,textvariable=topSpeed)
 payload=StringVar()
 payloadEntry=Entry(root,textvariable=payload)
 
+wingWpA=StringVar()
+wingWpAEntry=Entry(root,textvariable=wingWpA)
 
 root.mainloop()

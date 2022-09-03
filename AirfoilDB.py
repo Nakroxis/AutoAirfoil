@@ -3,6 +3,7 @@ from time import sleep, time
 import requests
 from bs4 import BeautifulSoup
 import numpy as np
+import json
 
 ##TODO: add option to download airfoil image and dat file
 
@@ -66,21 +67,29 @@ class AirfoilDB():
             rawSlice=plotsc[indexes[i]:indexes[i+1]]
             start=rawSlice.find("[[[")
             end=rawSlice.find("{")
-            data.append(eval(rawSlice[start:end].replace("],],],","]]]").replace("\n","")))
+            dataslice=rawSlice[start:end]
+            dataslice=dataslice.replace("],],],","]]]")
+            dataslice=dataslice.replace(",]","]")
+            dataslice=dataslice.replace("\n","")
+            dataslice=dataslice.replace(" ","")
+            dataslice=dataslice.replace("'","'")
+            try:
+                evaled=json.loads(dataslice)
+                data.append(evaled)
+            except:
+                print("unusable format")
 
         return data
 
 
     def downloadDataPoints(self,key):
-        if not os.path.exists(f"data/{key}.npy"):
+        if not os.path.exists(f"data/{key}.npy") :
             url="http://airfoiltools.com/polar/plot?a="
             #url + name-reynold_colorcode or name-reynold-n5_colorcode, name-reynold_colorcode or name-reynold-n5_colorcode,...
             flag=True
             for rey in self.reynoldsList:
-                if flag:
-                    url+="xf-"+key+f"-{rey}_ffffff%2Cxf-"+key+f"-{rey}-n5_ffffff"
-                else:
-                    url+="%2Cxf-"+key+f"-{rey}_ffffff%2Cxf-"+key+f"-{rey}-n5_ffffff"
+                url+="xf-"+key+f"-{rey}_ffffff,xf-"+key+f"-{rey}-n5_ffffff,"
+            url=url.removesuffix(",")
             response=requests.get(url)
             data=AirfoilDB.parseAirfoilData(response.content)
             if len(data)>0:
@@ -98,5 +107,5 @@ class AirfoilDB():
             self.downloadDataPoints(key)
         
 
-# foildb=AirfoilDB()
-# foildb.downloadAll()
+foildb=AirfoilDB()
+foildb.downloadAll()
