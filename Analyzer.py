@@ -6,6 +6,8 @@ import pandas as pd
 import numpy.polynomial.polynomial as poly
 import json
 
+
+
 class Analyzer():
     def __init__(self,condenseAll=False,condenseOverride=False):
         
@@ -28,7 +30,7 @@ class Analyzer():
 
 
     def airfoilCharacterics(self,key,override=False):
-        #simplify the airfoil to a few usable values using polynomial regression
+        '''simplify the airfoil to a few usable values using polynomial regression'''
         characteristicIDs=['liftdrag','liftaoa','momentaoa','dragaoa','effeaoa']
 
         # do not recalculate already calculated values, unless override
@@ -60,9 +62,9 @@ class Analyzer():
             json.dump(condensed, outfile,indent=4)
 
     def optimalAoARange(pol4,topPercent=0.367):
-        '''returns the optimal range of angle of attack and the threshold cl/cd
-         
-            topPercent= the first x percentages of cl/cd. for example: topPercent=0.2 returns 80 if max cl/cd is 100 and min cl/cd is 0
+        '''returns the optimal range of angle of attack and the threshold cl/cd\n         
+            topPercent= the first x percentages of cl/cd. for example: topPercent=0.2 returns 80 if max cl/cd is 100 and min cl/cd is 0\n
+            increase top percent to increase speed range, this will reduce efficieny at highest and lowest speeds
          '''
 
         pol=poly.Polynomial(pol4)
@@ -91,4 +93,3 @@ class Analyzer():
         return [offRoots[:2],thresholdClCd]
 
 
-ehe=Analyzer(condenseAll=True)
